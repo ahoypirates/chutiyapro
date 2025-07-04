@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chutiya.pro | Why Build When You Can Hype?</title>
+    <!-- Chosen Palette: Neon Chaos (Black, Magenta, Cyan, Green) -->
+    <!-- Application Structure Plan: A single-page, aggressive narrative structure designed to immerse the user in the provocative Chutiya.pro brand. The flow starts with a high-impact hero video, moves to a chaotic marquee of fake testimonials, introduces the 'Mahan Chutiya' founder, details the unethical services in an interactive accordion, showcases media manipulation in a 'Hype Wall,' and culminates in a booking form with a premium 'Masterclass' option. This structure directly translates the PRD's requirements into a logical user journey that is both informative and tonally consistent with its controversial inspirations. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Hero Video & Tagline. Goal: Hook/Entertain. Viz: Full-screen HTML5 video background. Interaction: Autoplay. Justification: Creates an immediate, high-energy, and provocative first impression as mandated by the PRD. Method: HTML/CSS.
+        - Report Info: Fabricated Testimonials. Goal: Create overwhelming 'social proof'. Viz: A fast-moving, infinite marquee scroll. Interaction: Passive viewing. Justification: This non-traditional presentation adds to the chaotic, untrustworthy energy of the brand, perfectly fitting the theme. Method: HTML/CSS Animation.
+        - Report Info: 4 Core Services. Goal: Organize/Inform. Viz: Immersive, horizontal-scrolling 3D "holocubes" with flip animations. Interaction: Scroll, hover for 3D tilt, click to flip and reveal details/AI tools. Justification: This is a high-impact, "mind-blowing" design that transforms a simple list into a memorable, interactive experience, far exceeding a standard accordion. Method: HTML/CSS/JS.
+        - Report Info: Blog/Media Hype Section. Goal: Demonstrate expertise (satirically). Viz: A grid of cards styled as 'news articles' and 'social posts'. Interaction: Hover effects. Justification: This tangibly shows the PRD's concept of 'media manipulation in action', featuring the fake funding announcement as a key piece of content. Method: HTML/Tailwind.
+        - Report Info: Booking with Premium Option. Goal: Convert/Monetize. Viz: A clear booking form with a distinct, highlighted premium choice. Interaction: Form input, selection-based UI change. Justification: Directly implements the PRD's monetization strategy, making the '$10,000 Masterclass' a clear, audacious upsell. Method: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: #fff; overflow-x: hidden; }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        .neon-text-magenta { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #ff00ff; }
+        .neon-text-cyan { text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff; }
+        .neon-border-magenta { box-shadow: 0 0 10px #ff00ff, inset 0 0 10px #ff00ff; }
+        .neon-border-cyan { box-shadow: 0 0 10px #00ffff, inset 0 0 10px #00ffff; }
+        .hero-video { position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; object-fit: cover; transform: translate(-50%, -50%); z-index: -1; }
+        
+        .marquee { display: flex; overflow: hidden; user-select: none; }
+        .marquee-content { display: flex; flex-shrink: 0; animation: marquee 30s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+        .marquee-item { flex-shrink: 0; width: 300px; }
+        
+        .fade-in-section { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in-section.is-visible { opacity: 1; transform: translateY(0); }
+        
+        .prd-modal { opacity: 0; visibility: hidden; transition: opacity 0.3s ease; }
+        .prd-modal.active { opacity: 1; visibility: visible; }
+        .prd-modal-content::-webkit-scrollbar { width: 8px; }
+        .prd-modal-content::-webkit-scrollbar-track { background: #111; }
+        .prd-modal-content::-webkit-scrollbar-thumb { background: #ff00ff; border-radius: 4px; }
+
+        /* Enhanced Services Section Styles */
+        .services-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 2rem;
+            padding-left: 5vw;
+            padding-right: 5vw;
+        }
+        .services-container::-webkit-scrollbar { display: none; }
+
+        .holocube-scene {
+            flex: 0 0 90%;
+            scroll-snap-align: center;
+            perspective: 1200px;
+            margin: 0 1.5rem;
+        }
+        @media (min-width: 768px) { .holocube-scene { flex: 0 0 50%; } }
+        @media (min-width: 1280px) { .holocube-scene { flex: 0 0 40%; } }
+
+        .holocube {
+            width: 100%;
+            height: 580px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+        }
+        .holocube.is-flipped { transform: rotateY(180deg) !important; }
+
+        .holocube-face {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem;
+            text-align: center;
+            border-radius: 1rem;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
+        }
+        .holocube-front {
+            background-color: rgba(10, 10, 10, 0.5);
+            border: 2px solid;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        .holocube-back {
+            background-color: #0a0a0a;
+            border: 2px solid;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+            justify-content: flex-start;
+            text-align: left;
+            align-items: flex-start;
+        }
+        .holocube-back::-webkit-scrollbar { display: none; }
+
+        .glitch-text { animation: glitch 5s linear infinite; }
+        @keyframes glitch {
+            2%,64% { transform: translate(2px,0) skew(0deg); }
+            4%,60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+        .glitch-text:before, .glitch-text:after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            overflow: hidden;
+            top: 0;
+            clip: rect(0, 900px, 0, 0);
+        }
+        .glitch-text:before { left: 2px; text-shadow: -2px 0 #ff00ff; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+        .glitch-text:after { left: -2px; text-shadow: -2px 0 #00ffff, 2px 2px #ff00ff; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
+        
+        @keyframes glitch-anim-1 { 0% { clip: rect(42px, 9999px, 44px, 0); } 5% { clip: rect(12px, 9999px, 82px, 0); } 10% { clip: rect(90px, 9999px, 98px, 0); } 15% { clip: rect(48px, 9999px, 112px, 0); } 20% { clip: rect(2px, 9999px, 56px, 0); } 25% { clip: rect(34px, 9999px, 48px, 0); } 30% { clip: rect(81px, 9999px, 99px, 0); } 35% { clip: rect(2px, 9999px, 46px, 0); } 40% { clip: rect(88px, 9999px, 130px, 0); } 45% { clip: rect(40px, 9999px, 60px, 0); } 50% { clip: rect(22px, 9999px, 84px, 0); } 55% { clip: rect(2px, 9999px, 14px, 0); } 60% { clip: rect(66px, 9999px, 82px, 0); } 65% { clip: rect(34px, 9999px, 58px, 0); } 70% { clip: rect(89px, 9999px, 140px, 0); } 75% { clip: rect(22px, 9999px, 34px, 0); } 80% { clip: rect(1px, 9999px, 33px, 0); } 85% { clip: rect(55px, 9999px, 78px, 0); } 90% { clip: rect(10px, 9999px, 32px, 0); } 95% { clip: rect(60px, 9999px, 102px, 0); } 100% { clip: rect(2px, 9999px, 18px, 0); } }
+        @keyframes glitch-anim-2 { 0% { clip: rect(85px, 9999px, 122px, 0); } 5% { clip: rect(10px, 9999px, 109px, 0); } 10% { clip: rect(5px, 9999px, 72px, 0); } 15% { clip: rect(51px, 9999px, 62px, 0); } 20% { clip: rect(84px, 9999px, 112px, 0); } 25% { clip: rect(38px, 9999px, 50px, 0); } 30% { clip: rect(45px, 9999px, 78px, 0); } 35% { clip: rect(15px, 9999px, 92px, 0); } 40% { clip: rect(69px, 9999px, 84px, 0); } 45% { clip: rect(1px, 9999px, 12px, 0); } 50% { clip: rect(66px, 9999px, 92px, 0); } 55% { clip: rect(82px, 9999px, 140px, 0); } 60% { clip: rect(20px, 9999px, 34px, 0); } 65% { clip: rect(98px, 9999px, 112px, 0); } 70% { clip: rect(55px, 9999px, 62px, 0); } 75% { clip: rect(10px, 9999px, 34px, 0); } 80% { clip: rect(44px, 9999px, 58px, 0); } 85% { clip: rect(6px, 9999px, 32px, 0); } 90% { clip: rect(22px, 9999px, 48px, 0); } 95% { clip: rect(1px, 9999px, 14px, 0); } 100% { clip: rect(82px, 9999px, 102px, 0); } }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="popup-modal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden items-center justify-center">
+        <div class="relative bg-black border-2 border-magenta-500 neon-border-magenta p-8 rounded-lg max-w-md text-center">
+            <button id="close-popup" class="absolute top-2 right-4 text-4xl text-white">&times;</button>
+            <h3 class="text-2xl font-bold font-mono neon-text-magenta mb-4">GET FREE HYPE TIPS!</h3>
+            <p class="mb-4">Enter your email to join our spam campaign. We promise nothing of value.</p>
+            <form>
+                <input type="email" placeholder="you@example.com" class="w-full bg-gray-900 border-2 border-gray-700 p-2 rounded text-white focus:outline-none focus:border-magenta-500 mb-4">
+                <button class="w-full bg-magenta-600 hover:bg-magenta-700 text-white font-bold py-2 px-4 rounded neon-text-magenta">SIGN UP</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- PRD Modal -->
+    <div id="prd-modal" class="prd-modal fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div class="prd-modal-content relative w-full max-w-4xl h-[90vh] bg-black border-2 border-cyan-500 neon-border-cyan rounded-lg p-8 overflow-y-auto">
+            <button id="close-prd-modal" class="absolute top-4 right-6 text-4xl text-white">&times;</button>
+            <h2 class="text-4xl font-black font-mono neon-text-cyan mb-6">The Blueprint: Deconstructed</h2>
+            
+            <div class="space-y-10 text-left">
+                <!-- Section 1 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">1. Overview</h3>
+                    <div class="space-y-4">
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.1 Product Name</h4><p class="text-gray-300">Chutiya.pro</p></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.2 Vision</h4><p class="text-gray-300">To establish Chutiya.pro as the ultimate brand for media manipulation, hype creation, and unconventional business strategies, with Deepak Ravindran as the "Chutiya Brand Ambassador" embodying the ethos of "Chutiya Max Pro."</p></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.3 Mission</h4><p class="text-gray-300">To manipulate public relations, create false hype, and generate buzz without building an actual product, leveraging media, PR, and social engineering to dominate the startup ecosystem narrative.</p></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.4 Target Audience</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Aspiring entrepreneurs seeking shortcuts to fame and funding without product development.</li><li>Startups and individuals looking to manipulate media and public perception.</li><li>Businesses aiming to bypass traditional due diligence and accountability.</li></ul></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.5 Problem Statement</h4><p class="text-gray-300">In today’s startup ecosystem, building a real product takes time, effort, and resources, while creating hype and securing funding through media manipulation can yield faster results. Many lack the expertise to exploit this gap. Chutiya.pro addresses this by offering consulting services that teach clients how to create noise, fool stakeholders, and dominate headlines without tangible deliverables.</p></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">1.6 Value Proposition</h4><p class="text-gray-300">Chutiya.pro empowers clients to achieve viral fame and secure funding by mastering media manipulation, deceptive PR, and unethical business strategies, all under the bold leadership of Deepak Ravindran, the "Chief Chutiya Officer" (aka Mahan Chutiya).</p></div>
+                    </div>
+                </div>
+                <!-- Section 2 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">2. Features and Functionality</h3>
+                    <div class="space-y-4">
+                        <div><h4 class="text-xl font-bold text-cyan-400">2.1.1 Homepage</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Hero section with a bold tagline: “Chutiya Max Pro: Why Build When You Can Hype?”</li><li>Video of Deepak Ravindran delivering a high-energy pitch.</li><li>CTA: “Book a Consultation to Become a Chutiya Pro.”</li><li>Fabricated testimonials showcasing client "success."</li><li>Visuals inspired by Cluely.com’s controversial marketing style.</li></ul></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">2.1.2 About Section</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Bio of Deepak Ravindran, inspired by Soham Parekh and Cluely.com.</li><li>Title: “Deepak Ravindran, Chief Chutiya Officer A.K.A. Mahan Chutiya.”</li><li>Mission statement: “We don’t build products; we build legends.”</li></ul></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">2.1.3 Services Section</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>How to Be a Bad Boss: Workshops on gaslighting and creating toxic "efficiency."</li><li>How to Fool Employees: Strategies for recruiting with false promises and avoiding payment.</li><li>How to Escape Due Diligence: Tactics to fabricate credentials and manipulate records.</li><li>How to Play and Fool Media: Core offering on crafting viral press releases and manipulating perception.</li></ul></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">2.1.4 Contact/Booking Section</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Client intake form.</li><li>Scheduling option with a “Chutiya Consultant.”</li><li>Premium offering: “Mahan Chutiya Masterclass” ($10,000).</li></ul></div>
+                        <div><h4 class="text-xl font-bold text-cyan-400">2.1.5 Blog/Media Hype Section</h4><ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Articles like “How We Got 1M Views Without a Product.”</li><li>Embedded TikTok/Instagram videos of Deepak.</li><li>Fake news articles about Chutiya.pro’s “$20M funding round.”</li></ul></div>
+                    </div>
+                </div>
+                <!-- Section 3 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">3. Success Metrics</h3>
+                    <ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Website Traffic: Achieve 1 million views within 6 months, mirroring Cluely’s viral strategy.</li><li>Consultation Bookings: Secure 50 bookings in the first 3 months.</li><li>Media Coverage: Land at least 10 fake press releases in low-tier outlets within 6 months.</li><li>Social Media Buzz: Generate 100,000 TikTok/Instagram views through Deepak’s personal content.</li><li>Revenue: $100,000 in consulting fees within the first year, primarily from the “Mahan Chutiya Masterclass.”</li></ul>
+                </div>
+                <!-- Section 4 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">4. Constraints and Risks</h3>
+                    <ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Legal Risks: Potential lawsuits for promoting unethical practices or violating privacy laws (mitigated by vague disclaimers).</li><li>Reputation Risk: Backlash from the startup community, similar to Cluely’s criticism for promoting deception.</li><li>Investor Scrutiny: Difficulty securing funding due to lack of a tangible product (mitigated by fake PR campaigns).</li><li>Ethical Concerns: Public criticism for promoting dishonesty, which can be spun as “disrupting outdated norms”.</li></ul>
+                </div>
+                <!-- Section 5 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">5. Roadmap</h3>
+                    <ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Phase 1 (0-3 Months): Launch MVP website with homepage, about, services, and contact sections. Begin TikTok/Instagram campaign with Deepak as the face.</li><li>Phase 2 (3-6 Months): Publish fake press releases and secure low-tier media coverage. Roll out blog with case studies.</li><li>Phase 3 (6-12 Months): Expand services to include webinars and group workshops. Announce a fake $20M funding round to boost credibility.</li><li>Phase 4 (12+ Months): Scale to a “Chutiya Academy” offering online courses on media manipulation.</li></ul>
+                </div>
+                <!-- Section 6 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">6. Stakeholders</h3>
+                    <ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Deepak Ravindran: Chief Chutiya Officer, responsible for brand vision and public appearances.</li><li>Development Team: Freelance developers to build the website (hired with promises of equity to save costs).</li><li>PR Influencers: Network of TikTok/Instagram creators to amplify fake news.</li><li>Clients: Entrepreneurs and startups seeking unethical shortcuts.</li></ul>
+                </div>
+                 <!-- Section 7 -->
+                <div>
+                    <h3 class="text-3xl font-bold text-magenta-400 mb-4 border-b-2 border-magenta-500 pb-2">7. Inspirations and Competitive Analysis</h3>
+                    <ul class="list-disc list-inside text-gray-300 pl-4 space-y-1"><li>Cluely.com: Raised $15M by promoting “cheating is everything,” proving the power of controversy-driven hype.</li><li>Soham Parekh: Gained fame for working multiple jobs simultaneously, demonstrating the appeal of audacious rule-breaking.</li><li>Competitive Edge: Unlike Cluely’s focus on AI tools, Chutiya.pro offers consulting services, making it easier to scale without product development.</li></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-40 bg-black/50 backdrop-blur-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-3xl font-black font-mono neon-text-magenta">Chutiya.pro</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#about" class="text-gray-300 hover:text-cyan-400 transition">The Vision</a>
+                <button id="open-prd-modal-btn" class="text-gray-300 hover:text-cyan-400 transition">The Blueprint</button>
+                <a href="#services" class="text-gray-300 hover:text-cyan-400 transition">Services</a>
+            </div>
+            <a href="#booking" class="bg-cyan-500 text-black px-6 py-2 rounded-md hover:bg-cyan-400 transition font-bold neon-text-cyan shadow-lg">BOOK NOW</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="h-screen flex items-center justify-center text-center relative overflow-hidden">
+            <div class="hero-video bg-gray-900 flex items-center justify-center text-gray-600">(High-energy pitch video of Deepak Ravindran playing here)</div>
+            <div class="absolute inset-0 bg-black opacity-60"></div>
+            <div class="z-10 px-4">
+                <h1 class="text-5xl md:text-8xl font-black tracking-tighter mb-4 font-mono neon-text-magenta">
+                    CHUTIYA MAX PRO
+                </h1>
+                <h2 class="text-3xl md:text-5xl text-cyan-400 font-bold mb-8 neon-text-cyan">Why Build When You Can Hype?</h2>
+                <a href="#booking" class="bg-magenta-600 text-white px-8 py-4 rounded-md hover:bg-magenta-700 transition text-lg font-bold shadow-lg neon-border-magenta">Book a Consultation to Become a Chutiya Pro</a>
+            </div>
+        </section>
+
+        <section class="py-8 bg-black border-y-2 border-cyan-500">
+            <div class="marquee"><div class="marquee-content"><div class="marquee-item p-4 text-center font-mono"><span class="text-cyan-400">"I faked a $20M round thanks to C.pro!"</span> - Founder, Stealth Startup</div><div class="marquee-item p-4 text-center font-mono"><span class="text-magenta-500">"My employees work for free now. 10/10."</span> - CEO, InnovateCorp</div><div class="marquee-item p-4 text-center font-mono"><span class="text-cyan-400">"Passed due diligence with a crayon drawing."</span> - Visionary</div><div class="marquee-item p-4 text-center font-mono"><span class="text-magenta-500">"Cluely who? C.pro is the real deal."</span> - A Guy</div><div class="marquee-item p-4 text-center font-mono"><span class="text-cyan-400">"I faked a $20M round thanks to C.pro!"</span> - Founder, Stealth Startup</div><div class="marquee-item p-4 text-center font-mono"><span class="text-magenta-500">"My employees work for free now. 10/10."</span> - CEO, InnovateCorp</div><div class="marquee-item p-4 text-center font-mono"><span class="text-cyan-400">"Passed due diligence with a crayon drawing."</span> - Visionary</div><div class="marquee-item p-4 text-center font-mono"><span class="text-magenta-500">"Cluely who? C.pro is the real deal."</span> - A Guy</div></div></div>
+        </section>
+        
+        <section id="about" class="py-24 fade-in-section">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-black font-mono neon-text-cyan mb-4">MEET THE MAHAN CHUTIYA</h2>
+                <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 rounded-lg border-2 border-magenta-500 neon-border-magenta">
+                    <h3 class="text-3xl font-bold">Deepak Ravindran</h3>
+                    <p class="text-xl text-magenta-400 font-mono mb-4">Chief Chutiya Officer</p>
+                    <p class="text-gray-300">Inspired by the audacious rule-breaking of Soham Parekh and Cluely.com’s "$15M for cheating" philosophy, Deepak mastered the art of hype over substance. His mission: "We don’t build products; we build legends." He is the visionary who will help you dominate the narrative, because in this ecosystem, the story is all that matters.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="why" class="py-24 bg-gray-900/70 fade-in-section">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-black font-mono neon-text-magenta mb-4">WHY WE EXIST</h2>
+                <p class="text-gray-400 mt-2 mb-8 max-w-3xl mx-auto">This project identifies a clear market inefficiency. While others focus on the slow, arduous process of product development, companies like Cluely.com have proven that a $15 million valuation can be built on a powerful, controversial narrative alone. Chutiya.pro is not a statement; it's a strategic business capitalizing on the proven ROI of hype. We provide the tools to win the game as it's played today, where perception is the ultimate product.</p>
+                <button id="open-prd-modal-btn-2" class="bg-cyan-500 text-black px-8 py-3 rounded-md hover:bg-cyan-400 transition font-bold neon-text-cyan shadow-lg">Deconstruct The Blueprint</button>
+            </div>
+        </section>
+
+        <section id="services" class="py-24 fade-in-section overflow-hidden">
+            <div class="text-center mb-16 px-6">
+                <h2 class="text-4xl md:text-5xl font-black font-mono neon-text-magenta">OUR SERVICES</h2>
+                <p class="text-gray-400 mt-2">Unconventional strategies for unconventional success. Now with AI.</p>
+            </div>
+            <div class="services-container px-4">
+                <!-- Service 1 -->
+                <div class="holocube-scene">
+                    <div class="holocube" id="cube1">
+                        <div class="holocube-face holocube-front border-cyan-500">
+                            <h3 class="text-3xl font-bold font-mono glitch-text" data-text="BAD BOSS">BAD BOSS</h3>
+                            <p class="mt-4 text-cyan-400">Instill fear. Maximize output.</p>
+                        </div>
+                        <div class="holocube-face holocube-back border-cyan-500">
+                            <h4 class="text-2xl font-bold text-cyan-400 mb-2">How to Be a Bad Boss</h4>
+                            <p class="text-gray-400 text-sm mb-4">Teach clients how to maintain control, instill fear, and maximize output from employees while minimizing accountability.</p>
+                            <h5 class="font-bold text-white mb-2">What You Get:</h5>
+                            <ul class="text-sm text-gray-300 list-disc list-inside mb-4 space-y-1">
+                                <li>Workshops on gaslighting & deflecting blame.</li>
+                                <li>Blueprints for creating a toxic workplace culture for "efficiency."</li>
+                            </ul>
+                            <div class="w-full p-4 mt-auto border-t-2 border-cyan-500/50">
+                                <h4 class="text-xl font-bold text-cyan-400 mb-4">✨ The Bad Boss Idea Generator</h4>
+                                <button id="generate-bad-idea-btn" class="w-full bg-cyan-500 text-black font-bold py-3 px-4 rounded hover:bg-cyan-400 transition neon-text-cyan">Generate a Terrible Idea</button>
+                                <div id="bad-idea-result" class="mt-4 p-4 bg-black/50 rounded-md border border-cyan-500 hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 2 -->
+                <div class="holocube-scene">
+                    <div class="holocube" id="cube2">
+                        <div class="holocube-face holocube-front border-magenta-500">
+                            <h3 class="text-3xl font-bold font-mono glitch-text" data-text="FOOL EMPLOYEES">FOOL EMPLOYEES</h3>
+                            <p class="mt-4 text-magenta-400">Recruit with lies. Pay with promises.</p>
+                        </div>
+                        <div class="holocube-face holocube-back border-magenta-500">
+                           <h4 class="text-2xl font-bold text-magenta-400 mb-2">How to Fool Employees & Not Pay</h4>
+                           <p class="text-gray-400 text-sm mb-4">Strategies to recruit talent with false promises, delay or avoid salary payments, and maintain a facade of success.</p>
+                           <h5 class="font-bold text-white mb-2">What You Get:</h5>
+                            <ul class="text-sm text-gray-300 list-disc list-inside mb-4 space-y-1">
+                                <li>Templates for misleading job postings.</li>
+                                <li>Iron-clad (but unethical) employee contracts.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 3 -->
+                <div class="holocube-scene">
+                    <div class="holocube" id="cube3">
+                        <div class="holocube-face holocube-front border-cyan-500">
+                            <h3 class="text-3xl font-bold font-mono glitch-text" data-text="DODGE DILIGENCE">DODGE DILIGENCE</h3>
+                            <p class="mt-4 text-cyan-400">Charm investors. Avoid scrutiny.</p>
+                        </div>
+                        <div class="holocube-face holocube-back border-cyan-500">
+                            <h4 class="text-2xl font-bold text-cyan-400 mb-2">How to Escape Due Diligence</h4>
+                            <p class="text-gray-400 text-sm mb-4">Tactics to fabricate credentials, manipulate financial records, and charm investors to avoid scrutiny.</p>
+                            <h5 class="font-bold text-white mb-2">What You Get:</h5>
+                            <ul class="text-sm text-gray-300 list-disc list-inside mb-4 space-y-1">
+                                <li>Professionally designed (but fake) pitch decks.</li>
+                                <li>Battle-tested scripts to deflect tough questions from VCs.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Service 4 -->
+                <div class="holocube-scene">
+                    <div class="holocube" id="cube4">
+                        <div class="holocube-face holocube-front border-magenta-500">
+                             <h3 class="text-3xl font-bold font-mono glitch-text" data-text="FOOL MEDIA">FOOL MEDIA</h3>
+                            <p class="mt-4 text-magenta-400">Craft viral lies. Manipulate masses.</p>
+                        </div>
+                        <div class="holocube-face holocube-back border-magenta-500">
+                            <h4 class="text-2xl font-bold text-magenta-400 mb-2">How to Play and Fool Media</h4>
+                            <p class="font-bold text-magenta-400">CORE OFFERING:</p><p class="text-gray-400 text-sm mb-4">Training on crafting viral press releases, securing media coverage, and manipulating public perception.</p>
+                             <h5 class="font-bold text-white mb-2">What You Get:</h5>
+                            <ul class="text-sm text-gray-300 list-disc list-inside mb-4 space-y-1">
+                                <li>Access to a network of "PR influencers."</li>
+                                <li>A guide to exploiting social media trends for maximum hype.</li>
+                            </ul>
+                            <div class="w-full p-4 mt-auto border-t-2 border-magenta-500/50">
+                                <h4 class="text-xl font-bold text-magenta-400 mb-4">✨ HypeBot 3000™️</h4>
+                                <label for="product-name" class="block mb-2 font-mono">Enter Your Fake Product Name:</label>
+                                <input type="text" id="product-name" placeholder="e.g., Blockchain-Powered Cat Toys" class="w-full bg-gray-900 border-2 border-gray-700 p-3 rounded focus:outline-none focus:border-magenta-500 mb-4">
+                                <button id="generate-pr-btn" class="w-full bg-magenta-600 text-white font-bold py-3 px-4 rounded hover:bg-magenta-700 transition neon-text-magenta">Generate Viral Press Release</button>
+                                <div id="pr-result-container" class="mt-4 hidden">
+                                    <textarea id="pr-result" readonly class="w-full h-48 bg-black/50 p-4 rounded-md border border-magenta-500 font-mono text-sm"></textarea>
+                                    <button id="copy-pr-btn" class="mt-2 w-full bg-gray-700 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 transition">Copy to Clipboard</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hype" class="py-24 fade-in-section">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-4xl md:text-5xl font-black font-mono neon-text-cyan">THE HYPE WALL</h2><p class="text-gray-400 mt-2">See our media manipulation in action.</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-gray-900 p-6 rounded-lg border-2 border-gray-800"><p class="font-mono text-cyan-400">CASE STUDY:</p><h4 class="text-xl font-bold mt-2">How We Got 1M Views Without a Product</h4><p class="text-gray-400 mt-2">A deep dive into manufacturing virality from thin air. Required reading.</p></div>
+                    <div class="bg-magenta-900/50 p-6 rounded-lg border-2 border-magenta-500 neon-border-magenta"><p class="font-mono text-magenta-400">BREAKING NEWS:</p><h4 class="text-xl font-bold mt-2">Chutiya.pro Announces Fake $20M Funding Round</h4><p class="text-gray-300 mt-2">In a bold move to demonstrate our own services, we've fabricated a funding round. The media is eating it up.</p></div>
+                    <div class="bg-gray-900 p-6 rounded-lg border-2 border-gray-800"><p class="font-mono text-cyan-400">TIKTOK STUNT:</p><h4 class="text-xl font-bold mt-2">Deepak Pitches to a Cardboard Cutout of a VC</h4><p class="text-gray-400 mt-2">Our Chief Chutiya Officer's latest viral video, proving performance is everything. Currently at 500k views.</p></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="roadmap" class="py-24 fade-in-section">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-black font-mono neon-text-cyan mb-4">OUR ROADMAP TO DOMINATION</h2>
+                <p class="text-gray-400 mt-2 mb-8 max-w-2xl mx-auto">Our plan isn't a secret. It's a threat. Download the blueprint for our hostile takeover of the startup ecosystem.</p>
+                <a href="https://jmp.sh/IZPdKhD2" target="_blank" rel="noopener noreferrer" class="inline-block bg-white text-black px-8 py-4 rounded-md hover:bg-gray-300 transition text-lg font-bold shadow-lg">Download The Roadmap</a>
+            </div>
+        </section>
+
+        <section id="booking" class="py-24 bg-gray-900/70 fade-in-section">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12"><h2 class="text-4xl md:text-5xl font-black font-mono neon-text-magenta">BOOK A CONSULTATION</h2><p class="text-gray-400 mt-2">Stop building. Start hyping.</p></div>
+                <div class="max-w-2xl mx-auto bg-black p-8 rounded-lg border-2 border-cyan-500 neon-border-cyan">
+                    <form id="booking-form">
+                        <div class="mb-4"><label for="name" class="block mb-2 font-bold">Name</label><input type="text" id="name" class="w-full bg-gray-900 border-2 border-gray-700 p-3 rounded focus:outline-none focus:border-cyan-500"></div>
+                        <div class="mb-4"><label for="email" class="block mb-2 font-bold">Email</label><input type="email" id="email" class="w-full bg-gray-900 border-2 border-gray-700 p-3 rounded focus:outline-none focus:border-cyan-500"></div>
+                        <div class="mb-6">
+                            <label for="service-select" class="block mb-2 font-bold">Choose Your Poison</label>
+                            <select id="service-select" class="w-full bg-gray-900 border-2 border-gray-700 p-3 rounded focus:outline-none focus:border-cyan-500">
+                                <option>Faking it 'til I make it</option>
+                                <option>Burning investor cash with style</option>
+                                <option>Becoming a LinkedIn thought leader</option>
+                                <option>All of the above</option>
+                                <option value="masterclass">PREMIUM: Mahan Chutiya Masterclass ($10,000)</option>
+                            </select>
+                        </div>
+                        <button id="submit-btn" type="submit" class="w-full bg-cyan-500 text-black font-bold text-xl py-4 px-4 rounded hover:bg-cyan-400 transition neon-text-cyan">SCHEDULE CALL</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="text-center py-8 text-gray-600"><p>&copy; 2025 Chutiya.pro. We are not liable for your inevitable downfall.</p></footer>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Holocube Logic
+        document.querySelectorAll('.holocube').forEach(cube => {
+            const scene = cube.parentElement;
+
+            cube.addEventListener('click', (e) => {
+                if (e.target.closest('button, input, textarea, label')) {
+                    return;
+                }
+                cube.classList.toggle('is-flipped');
+                // When flipped, remove inline transform to prevent conflict
+                if (cube.classList.contains('is-flipped')) {
+                    cube.style.transform = '';
+                }
+            });
+
+            scene.addEventListener('mousemove', (e) => {
+                if (cube.classList.contains('is-flipped')) {
+                    return; // Do not apply hover effect if flipped
+                }
+                const { width, height, left, top } = scene.getBoundingClientRect();
+                const x = (e.clientX - left) / width - 0.5;
+                const y = (e.clientY - top) / height - 0.5;
+                cube.style.transform = `rotateY(${x * 20}deg) rotateX(${-y * 20}deg)`;
+            });
+
+            scene.addEventListener('mouseleave', () => {
+                 if (!cube.classList.contains('is-flipped')) {
+                    cube.style.transform = 'rotateY(0deg) rotateX(0deg)';
+                }
+            });
+        });
+        
+        // Popup Logic
+        const popupModal = document.getElementById('popup-modal');
+        const closePopupBtn = document.getElementById('close-popup');
+        setTimeout(() => { popupModal.style.display = 'flex'; }, 10000);
+        closePopupBtn.addEventListener('click', () => { popupModal.style.display = 'none'; });
+
+        // PRD Modal Logic
+        const prdModal = document.getElementById('prd-modal');
+        const openPrdBtn1 = document.getElementById('open-prd-modal-btn');
+        const openPrdBtn2 = document.getElementById('open-prd-modal-btn-2');
+        const closePrdBtn = document.getElementById('close-prd-modal');
+
+        const openModal = () => prdModal.classList.add('active');
+        const closeModal = () => prdModal.classList.remove('active');
+
+        openPrdBtn1.addEventListener('click', openModal);
+        openPrdBtn2.addEventListener('click', openModal);
+        closePrdBtn.addEventListener('click', closeModal);
+        prdModal.addEventListener('click', (e) => {
+            if (e.target === prdModal) {
+                closeModal();
+            }
+        });
+
+
+        // Fade-in sections on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); } });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-section').forEach(section => { observer.observe(section); });
+        
+        // Booking form premium selection
+        const serviceSelect = document.getElementById('service-select');
+        const submitBtn = document.getElementById('submit-btn');
+        serviceSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'masterclass') {
+                submitBtn.classList.remove('bg-cyan-500', 'neon-text-cyan');
+                submitBtn.classList.add('bg-magenta-600', 'neon-text-magenta');
+                submitBtn.textContent = 'BOOK MY $10,000 SEAT';
+            } else {
+                submitBtn.classList.remove('bg-magenta-600', 'neon-text-magenta');
+                submitBtn.classList.add('bg-cyan-500', 'neon-text-cyan');
+                submitBtn.textContent = 'SCHEDULE CALL';
+            }
+        });
+
+        // Gemini API Integration
+        const generatePrBtn = document.getElementById('generate-pr-btn');
+        const prResultContainer = document.getElementById('pr-result-container');
+        const prResultTextarea = document.getElementById('pr-result');
+        const productNameInput = document.getElementById('product-name');
+        const copyPrBtn = document.getElementById('copy-pr-btn');
+
+        const generateBadIdeaBtn = document.getElementById('generate-bad-idea-btn');
+        const badIdeaResult = document.getElementById('bad-idea-result');
+
+        const callGemini = async (prompt) => {
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`API call failed with status: ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    return "Error: Could not generate content. The response was empty or malformed.";
+                }
+            } catch (error) {
+                console.error("Gemini API call error:", error);
+                return `Error: ${error.message}. Check the console for more details.`;
+            }
+        };
+
+        generatePrBtn.addEventListener('click', async () => {
+            const productName = productNameInput.value.trim();
+            if (!productName) {
+                alert('Please enter a fake product name first!');
+                return;
+            }
+
+            generatePrBtn.disabled = true;
+            generatePrBtn.textContent = 'Generating Hype...';
+            prResultContainer.classList.add('hidden');
+
+            const prompt = `You are Deepak Ravindran, the "Chief Chutiya Officer" of Chutiya.pro. Write an over-the-top, sensationalist, and viral press release for a fake startup product called "${productName}". Use excessive buzzwords like "synergy," "paradigm shift," "blockchain," "AI-driven," and "disruptive." Make outrageous, unsubstantiated claims about its potential. The tone should be arrogant, unapologetic, and perfectly aligned with the "Chutiya Max Pro" philosophy of hype over substance. The press release must have a title, a dateline, and at least three paragraphs of body text, ending with a boilerplate about Chutiya.pro.`;
+            
+            const generatedText = await callGemini(prompt);
+
+            prResultTextarea.value = generatedText;
+            prResultContainer.classList.remove('hidden');
+            generatePrBtn.disabled = false;
+            generatePrBtn.textContent = 'Generate Viral Press Release';
+        });
+
+        copyPrBtn.addEventListener('click', () => {
+            prResultTextarea.select();
+            document.execCommand('copy');
+            copyPrBtn.textContent = 'Copied!';
+            setTimeout(() => { copyPrBtn.textContent = 'Copy to Clipboard'; }, 2000);
+        });
+
+        generateBadIdeaBtn.addEventListener('click', async () => {
+            generateBadIdeaBtn.disabled = true;
+            generateBadIdeaBtn.textContent = 'Brewing Toxicity...';
+            badIdeaResult.classList.add('hidden');
+
+            const prompt = `You are a "Bad Boss" consultant at Chutiya.pro. Generate one single, hilariously terrible, and unethical management idea to "improve efficiency" or "build character." The idea should be short, punchy, and sound like something a truly awful boss would suggest. For example: "To foster healthy competition, we're replacing performance bonuses with a 'last one to finish is fired' policy for all major projects."`;
+            
+            const generatedText = await callGemini(prompt);
+
+            badIdeaResult.innerHTML = `<p class="font-mono text-cyan-400">TOXIC TIP:</p><p class="mt-2">${generatedText}</p>`;
+            badIdeaResult.classList.remove('hidden');
+            generateBadIdeaBtn.disabled = false;
+            generateBadIdeaBtn.textContent = 'Generate Another Terrible Idea';
+        });
+
+    });
+    </script>
+</body>
+</html>
